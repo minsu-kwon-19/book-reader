@@ -1,0 +1,7 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {titles,seedCatalog,availableBooks,assignBook} from './catalog.js';
+import {validate} from './model.js';
+test('all 100 supplied titles seed once and survive backup',()=>{assert.equal(titles.length,100);assert.equal(new Set(titles).size,100);const data=seedCatalog({version:1,books:[]});assert.equal(data.books.length,100);validate(data);assert.equal(seedCatalog(data),data);const restored=validate(JSON.parse(JSON.stringify(data)));restored.books.pop();assert.equal(seedCatalog(restored).books.length,99)});
+test('existing books and notes are preserved without title duplicates',()=>{const old={...seedCatalog({version:1,books:[]}).books[0],id:'existing',title:'생각의  비밀',observed:'내 기록',status:'done'};const data=seedCatalog({version:1,books:[old]});assert.equal(data.books.length,100);assert.deepEqual(data.books[0],old)});
+test('search, planning exclusion, unplanning and completed books',()=>{const data=seedCatalog({version:1,books:[]});assert.equal(availableBooks(data.books,'제로투원').length,1);const id=data.books[0].id;const planned=assignBook(data.books,id,'2026-11-20');assert.equal(availableBooks(planned).length,99);assert.equal(assignBook(planned,id,'2026-11-21')[0].start,'2026-11-20');const removed=planned.map(b=>b.id===id?{...b,start:'',end:''}:b);assert.equal(availableBooks(removed).length,100);removed[0].status='done';assert.equal(availableBooks(removed).length,99);assert.equal(assignBook(removed,id,'2026-11-20')[0].start,'')});
