@@ -42,3 +42,6 @@ Google Fonts가 연결되지 않으면 시스템 글꼴을 사용합니다.
 GitHub의 `minsu-kwon-19/book-reader` 저장소가 Vercel 프로젝트에 연결되어 있습니다.
 `main` 브랜치에 push하면 운영 사이트 https://book-reader-cyan.vercel.app 에 자동 배포됩니다.
 배포 상태는 Vercel 프로젝트의 Deployments에서 확인할 수 있습니다.
+
+## 본깨적
+책장의 본깨적 버튼이나 책 제목을 눌러 본 것·깨달은 것·적용할 것을 적고 저장할 수 있습니다. 각 항목은 선택 사항이며 5,000자까지 지원합니다. JSON 백업·복원에도 포함되며, 이전 백업도 호환됩니다.
