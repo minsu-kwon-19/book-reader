@@ -7,5 +7,15 @@ export function movePlan(books,id,fromDay,toDay){
   const shift=day=>new Date(Date.parse(day+'T00:00:00Z')+offset*86400000).toISOString().slice(0,10);
   return books.map(b=>b.id===id&&scheduled(b,fromDay)?{...b,start:shift(b.start),end:shift(b.end)}:b);
 }
+export function planLength(book){return book.start&&book.end?Math.round((Date.parse(book.end+'T00:00:00Z')-Date.parse(book.start+'T00:00:00Z'))/86400000)+1:0}
+export function resizePlan(books,id,change){
+  if(![-1,1].includes(change))throw Error('변경할 기간을 확인해 주세요.');
+  return books.map(book=>{
+    if(book.id!==id||!book.start||!book.end)return book;
+    if(change<0&&planLength(book)<=1)return book;
+    const end=new Date(Date.parse(book.end+'T00:00:00Z')+change*86400000).toISOString().slice(0,10);
+    return {...book,end};
+  });
+}
 export function validate(data){if(!data||data.version!==1||!Array.isArray(data.books)||data.books.length>2000)throw Error('올바른 독서 기록 파일이 아닙니다.');const ids=new Set();for(const b of data.books){if(!b||typeof b.id!=='string'||ids.has(b.id)||typeof b.title!=='string'||!b.title.trim()||b.title.length>120||typeof b.author!=='string'||!['reading','want','done'].includes(b.status)||!Number.isInteger(b.pages)||b.pages<1||b.pages>100000||!Number.isInteger(b.current)||b.current<0||b.current>b.pages||!Number.isInteger(b.color)||b.color<0||b.color>4||!Array.isArray(b.logs)||!b.logs.every(validDate)||!['start','end'].every(k=>b[k]===''||validDate(b[k]))||Boolean(b.start)!==Boolean(b.end)||(b.start&&b.start>b.end))throw Error('책 정보 또는 날짜 형식이 올바르지 않습니다.');for(const key of ['observed','learned','applied'])if(b[key]!==undefined&&(typeof b[key]!=='string'||b[key].length>5000))throw Error('본깨적은 각 항목에 5,000자 이하의 글을 입력해 주세요.');ids.add(b.id)}return data}
 function validDate(s){if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;const d=new Date(`${s}T12:00:00`);return !Number.isNaN(+d)&&dateKey(d)===s}
