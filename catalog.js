@@ -86,7 +86,7 @@ export const titles = `생각의 비밀
 웰씽킹
 생각하라 그리고 부자가 되어라
 데일 카네기 인간관계론
-데일 카네기 자기관리론
+나는 나의 스무 살을 가장 존중한다
 프레임
 후회의 재발견
 멘탈의 연금술
@@ -100,10 +100,13 @@ export const titles = `생각의 비밀
 인생에 변명하지 마라`.split('\n');
 const normalize=s=>s.replace(/\s+/g,'').toLowerCase();
 export function seedCatalog(data){
-  if(data.catalogVersion===1)return data;
+  if(data.catalogVersion>=3)return data;
+  const removed=new Set(['데일 카네기 자기관리론'].map(normalize));
+  data={...data,books:data.books.filter(b=>!removed.has(normalize(b.title)))};
+  const pending=data.catalogVersion===2?['데일 카네기 인간관계론']:data.catalogVersion===1?['보도 섀퍼의 돈','나는 나의 스무 살을 가장 존중한다','데일 카네기 인간관계론']:titles;
   const existing=new Set(data.books.map(b=>normalize(b.title))),ids=new Set(data.books.map(b=>b.id));
-  const additions=titles.flatMap((title,i)=>{if(existing.has(normalize(title)))return [];let id=`reading-100-${i+1}`;while(ids.has(id))id+='-new';ids.add(id);return [{id,title,author:'',status:'want',pages:1,pagesUnknown:true,current:0,color:i%5,start:'',end:'',logs:[],observed:'',learned:'',applied:''}]});
-  return {...data,catalogVersion:1,books:[...data.books,...additions]};
+  const additions=pending.flatMap((title,i)=>{if(existing.has(normalize(title)))return [];let id=`reading-100-${titles.indexOf(title)+1}`;while(ids.has(id))id+='-new';ids.add(id);return [{id,title,author:'',status:'want',pages:1,pagesUnknown:true,current:0,color:i%5,start:'',end:'',logs:[],observed:'',learned:'',applied:''}]});
+  return {...data,catalogVersion:3,books:[...data.books,...additions]};
 }
 export function availableBooks(books,query=''){return books.filter(b=>!b.start&&!b.end&&b.status!=='done'&&normalize(`${b.title} ${b.author}`).includes(normalize(query)))}
 export function assignBook(books,id,day){return books.map(b=>b.id===id&&!b.start&&!b.end&&b.status!=='done'?{...b,start:day,end:day}:b)}
