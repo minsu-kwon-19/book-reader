@@ -37,3 +37,8 @@ Google Fonts가 연결되지 않으면 시스템 글꼴을 사용합니다.
 
 ## 테스트 범위
 윤년과 연도 경계, 독서 계획 기간 경계, 손상된 백업과 중복 ID 거부를 검증합니다.
+
+## 자동 배포
+GitHub의 `minsu-kwon-19/book-reader` 저장소가 Vercel 프로젝트에 연결되어 있습니다.
+`main` 브랜치에 push하면 운영 사이트 https://book-reader-cyan.vercel.app 에 자동 배포됩니다.
+배포 상태는 Vercel 프로젝트의 Deployments에서 확인할 수 있습니다.
