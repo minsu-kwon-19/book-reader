@@ -30,3 +30,6 @@ textarea{font:inherit;width:100%;display:block;margin-top:6px;border:1px solid #
 
 .reading-state,.calendar-status{display:inline-block;border-radius:5px;padding:2px 6px;font-size:11px;font-weight:700;line-height:1.5}.state-reading{background:#d8ede2;color:#18583b}.state-want{background:#eeeae1;color:#655e50}.state-done{background:#e1e8f4;color:#344d7a}.calendar-book.book-state-reading{box-shadow:inset 3px 0 #31845b}.calendar-status{margin-left:3px;font-size:10px}.day-read-mark{display:inline-block;margin-left:4px;font-size:10px;color:#246348}.day-book .reading-state{margin:5px 0}.calendar-book{white-space:normal;overflow-wrap:anywhere}.calendar-legend{flex-wrap:wrap}
 
+
+.stats{grid-template-columns:repeat(auto-fit,minmax(155px,1fr));row-gap:20px}.reader-stat-name{display:block;font-size:12px;margin-bottom:5px}.reader-days .stat-icon.owner-reader-1{background:#e0ebdf;color:#2f644a}.reader-days .stat-icon.owner-reader-2{background:#e8e4f4;color:#69558c}@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stats>div:nth-child(2n){border-right:0}.stats>div:nth-child(3){border-right:1px solid var(--line)}}@media(max-width:600px){.stats{gap:18px 0}.stats>div{min-width:0}.reader-stat-name{font-size:11px}}
+
