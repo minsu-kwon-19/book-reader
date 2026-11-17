@@ -1,17 +1,10 @@
-import {timingSafeEqual} from 'node:crypto';
 import {validate} from '../model.js';
 import {validateProfiles} from '../profiles.js';
+import {authorized,sameOrigin} from './auth.js';
 
 const key='book-reader:shared:v1';
 const script=`local current=redis.call('GET',KEYS[1]); local revision=0; if current then revision=cjson.decode(current).revision end; if revision~=tonumber(ARGV[1]) then return 0 end; redis.call('SET',KEYS[1],ARGV[2]); return 1`;
 
-function authorized(req){
-  const secret=process.env.BOOK_READER_SYNC_KEY;
-  const supplied=req.headers.authorization?.replace(/^Bearer /i,'')||'';
-  if(!secret||!supplied)return false;
-  const a=Buffer.from(secret),b=Buffer.from(supplied);
-  return a.length===b.length&&timingSafeEqual(a,b);
-}
 async function redis(command){
   const url=process.env.KV_REST_API_URL;
   const token=process.env.KV_REST_API_TOKEN;
@@ -33,6 +26,7 @@ function validPayload(value){
 export default async function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   if(!authorized(req))return res.status(401).json({error:'Unauthorized'});
+  if(req.method==='PUT'&&!sameOrigin(req))return res.status(403).json({error:'Forbidden'});
   try{
     if(req.method==='GET'){
       const raw=await redis(['GET',key]);

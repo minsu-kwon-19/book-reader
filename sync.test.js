@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import handler from './api/sync.js';
+import {sessionCookie} from './api/auth.js';
 import {defaultProfiles} from './profiles.js';
 
 test('sync API requires a key and rejects stale writes without replacing data',async()=>{
@@ -23,14 +24,14 @@ test('sync API requires a key and rejects stale writes without replacing data',a
     }
     return {ok:true,json:async()=>({result})};
   };
-  async function call(method,body,secret='test-secret'){
-    const req={method,headers:{authorization:`Bearer ${secret}`},body};
+  async function call(method,body,authenticated=true){
+    const req={method,headers:{cookie:authenticated?sessionCookie().split(';')[0]:'',host:'book-reader.test'},body};
     const res={code:200,setHeader(){},status(code){this.code=code;return this},json(value){this.value=value;return this}};
     await handler(req,res);
     return res;
   }
   try{
-    assert.equal((await call('GET',null,'wrong')).code,401);
+    assert.equal((await call('GET',null,false)).code,401);
     assert.deepEqual((await call('GET')).value,{revision:0,payload:null});
     const payload={profiles:defaultProfiles(),libraries:{'reader-1':{version:1,books:[]},'reader-2':{version:1,books:[]}}};
     assert.equal((await call('PUT',{revision:0,payload})).value.revision,1);
