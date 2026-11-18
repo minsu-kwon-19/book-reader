@@ -85,20 +85,31 @@ function moveCalendarBook(id,from,to){
   }catch(err){toast(err.message)}
 }
 function bindCalendarDrag(){
-  let dragging=null,touch=null;
+  let touch=null;
   const clear=()=>document.querySelectorAll('.drop-target,.dragging').forEach(el=>el.classList.remove('drop-target','dragging'));
   const highlight=target=>{document.querySelectorAll('.drop-target').forEach(el=>el.classList.remove('drop-target'));target?.classList.add('drop-target')};
   document.querySelectorAll('[data-drag-book]').forEach(el=>{
-    el.addEventListener('dragstart',e=>{dragging={id:el.dataset.dragBook,from:el.dataset.fromDay};e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragging.id);el.classList.add('dragging')});
-    el.addEventListener('dragend',()=>{dragging=null;clear();suppressCalendarClickUntil=Date.now()+400});
-    el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;touch={id:el.dataset.dragBook,from:el.dataset.fromDay,x:e.clientX,y:e.clientY,moved:false};el.setPointerCapture(e.pointerId)});
-    el.addEventListener('pointermove',e=>{if(!touch)return;if(Math.hypot(e.clientX-touch.x,e.clientY-touch.y)<8&&!touch.moved)return;touch.moved=true;el.classList.add('dragging');highlight(document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-date]'))});
-    el.addEventListener('pointerup',e=>{if(!touch)return;const drag=touch;touch=null;clear();if(drag.moved){e.preventDefault();suppressCalendarClickUntil=Date.now()+500;moveCalendarBook(drag.id,drag.from,document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-date]')?.dataset.date)}});
+    el.draggable=false;
+    el.addEventListener('pointerdown',e=>{
+      if(e.pointerType==='mouse'&&e.button!==0)return;
+      touch={id:el.dataset.dragBook,from:el.dataset.fromDay,x:e.clientX,y:e.clientY,moved:false};
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove',e=>{
+      if(!touch)return;
+      if(!touch.moved&&Math.hypot(e.clientX-touch.x,e.clientY-touch.y)<8)return;
+      touch.moved=true;
+      el.classList.add('dragging');
+      highlight(document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-date]'));
+    });
+    el.addEventListener('pointerup',e=>{
+      if(!touch)return;
+      const drag=touch;touch=null;
+      const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-date]');
+      clear();
+      if(drag.moved){e.preventDefault();suppressCalendarClickUntil=Date.now()+500;moveCalendarBook(drag.id,drag.from,target?.dataset.date)}
+    });
     el.addEventListener('pointercancel',()=>{touch=null;clear()});
-  });
-  document.querySelectorAll('[data-date]').forEach(el=>{
-    el.addEventListener('dragover',e=>{if(!dragging)return;e.preventDefault();e.dataTransfer.dropEffect='move';highlight(el)});
-    el.addEventListener('drop',e=>{if(!dragging)return;e.preventDefault();e.stopPropagation();const drag=dragging;dragging=null;clear();suppressCalendarClickUntil=Date.now()+500;moveCalendarBook(drag.id,drag.from,el.dataset.date)});
   });
 }
 function switchReader(id){
