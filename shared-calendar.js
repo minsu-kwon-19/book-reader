@@ -5,3 +5,6 @@ export function calendarEntries(libraries,day){
 export function readDays(libraries,month){
   return new Set(libraries.flatMap(({books})=>books.flatMap(book=>book.logs.filter(day=>day.startsWith(month)))));
 }
+export function readBookCount(books,month){
+  return books.filter(book=>book.logs.some(day=>day.startsWith(month))).length;
+}

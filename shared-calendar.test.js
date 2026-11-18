@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {calendarEntries,readDays} from './shared-calendar.js';
+import {calendarEntries,readDays,readBookCount} from './shared-calendar.js';
 const book=(title,start,logs=[])=>({id:title,title,start,end:start,logs});
+test('monthly book count counts different books on one day and each book only once',()=>{
+  const books=[book('A','',['2026-11-16','2026-11-17']),book('B','',['2026-11-16']),book('C','',['2026-10-31']),book('D','',[])];
+  assert.equal(readBookCount(books,'2026-11'),2);
+  assert.equal(readBookCount([books[0]],'2026-11'),1);
+  assert.equal(readBookCount([],'2026-11'),0);
+});
 test('reader day totals stay separate and count each date once within the month',()=>{
   const first={books:[book('A','',['2026-11-16','2026-11-17']),book('B','',['2026-11-17','2026-10-31'])]};
   const second={books:[book('C','',['2026-11-16'])]};
