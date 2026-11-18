@@ -33,3 +33,6 @@ textarea{font:inherit;width:100%;display:block;margin-top:6px;border:1px solid #
 
 .stats{grid-template-columns:repeat(auto-fit,minmax(155px,1fr));row-gap:20px}.reader-stat-name{display:block;font-size:12px;margin-bottom:5px}.reader-days .stat-icon.owner-reader-1{background:#e0ebdf;color:#2f644a}.reader-days .stat-icon.owner-reader-2{background:#e8e4f4;color:#69558c}@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stats>div:nth-child(2n){border-right:0}.stats>div:nth-child(3){border-right:1px solid var(--line)}}@media(max-width:600px){.stats{gap:18px 0}.stats>div{min-width:0}.reader-stat-name{font-size:11px}}
 
+
+.day-book div .plan-cancel{display:block;width:100%;padding:9px 10px;margin:10px 0;border:1px solid #d7aaa1;border-radius:6px;background:#fff5f2;color:#934536;font-size:12px;font-weight:600;text-align:center}.plan-help{font-size:11px;color:#758071;margin:8px 0;line-height:1.6}
+
