@@ -1,6 +1,17 @@
 export const dateKey=(date)=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 export function monthDays(year,month){const start=new Date(year,month,1);start.setDate(1-start.getDay());return Array.from({length:42},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return dateKey(d)})}
 export function scheduled(book,day){return Boolean(book.start&&book.end&&book.start<=day&&day<=book.end)}
+export function finishBooks(books,id,day){
+  const selected=books.find(book=>book.id===id);
+  if(!selected)return books;
+  const title=selected.title.trim().toLocaleLowerCase();
+  const author=selected.author.trim().toLocaleLowerCase();
+  const completing=selected.status!=='done';
+  return books.map(book=>{
+    if(book.title.trim().toLocaleLowerCase()!==title||book.author.trim().toLocaleLowerCase()!==author)return book;
+    return {...book,status:completing?'done':'reading',current:completing?book.pages:0,logs:completing&&book.id===id?[...new Set([...book.logs,day])]:book.logs};
+  });
+}
 export function movePlan(books,id,fromDay,toDay){
   if(!validDate(fromDay)||!validDate(toDay))throw Error('이동할 날짜를 확인해 주세요.');
   const offset=(Date.parse(toDay+'T00:00:00Z')-Date.parse(fromDay+'T00:00:00Z'))/86400000;

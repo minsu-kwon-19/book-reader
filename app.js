@@ -1,4 +1,4 @@
-import {dateKey,monthDays,scheduled,validate,movePlan,resizePlan,planLength} from './model.js';
+import {dateKey,monthDays,scheduled,validate,movePlan,resizePlan,planLength,finishBooks} from './model.js';
 import {seedCatalog,availableBooks,assignBook} from './catalog.js';
 import {calendarEntries,readBookCount} from './shared-calendar.js';
 import {PROFILE_KEY,defaultProfiles,libraryKey,validateProfiles} from './profiles.js';
@@ -51,7 +51,7 @@ function startReading(id){
   if(update(data.books.map(b=>b.id===id&&b.status==='want'?{...b,status:'reading'}:b)))toast('읽는 중으로 바꿨어요.');
   else filter=previous;
 }
-function finish(id){if(storageError)return toast('기존 기록을 복원한 뒤 다시 시도해 주세요.');update(data.books.map(b=>b.id===id?{...b,status:b.status==='done'?'reading':'done',current:b.status==='done'?0:b.pages,logs:b.status==='done'?b.logs:[...new Set([...b.logs,today])]}:b))}
+function finish(id){if(storageError)return toast('기존 기록을 복원한 뒤 다시 시도해 주세요.');update(finishBooks(data.books,id,page==='calendar'&&selected<=today?selected:today))}
 function unplan(id){if(storageError)return;if(update(data.books.map(b=>b.id===id?{...b,start:'',end:''}:b)))toast('독서 계획을 취소했어요. 읽는 중인 책과 읽기 체크는 달력에 계속 표시될 수 있어요.')}
 function changeDuration(id,change){
   if(storageError)return toast('기존 기록을 복원한 뒤 다시 시도해 주세요.');
